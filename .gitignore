@@ -216,3 +216,58 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Azure Developer CLI local environment state
+.azure/
+
+# Local environment variables / secrets
+.env
+.env.*
+!.env.example
+
+# Python virtual environments
+.venv/
+venv/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Build / packaging
+build/
+dist/
+*.egg-info/
+
+# Test / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE/editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker override files
+docker-compose.override.yml
+
+# Logs
+*.log
+logs/
+
+# Terraform, if you add it later
+.terraform/
+*.tfstate
+*.tfstate.*
+terraform.tfvars
+
+# OpenAI Codex CLI local config/history if copied into repo by accident
+.codex/
+.codex-*/
