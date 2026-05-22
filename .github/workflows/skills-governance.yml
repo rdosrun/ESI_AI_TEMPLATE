@@ -1,0 +1,65 @@
+name: Skills Governance
+
+on:
+  pull_request:
+    paths:
+      - "skills/**"
+      - "scripts/validate-skills.py"
+      - ".github/workflows/skills-governance.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-skill-manifests:
+    name: Validate Skill Manifests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate skills
+        run: python scripts/validate-skills.py
+
+      - name: Upload validated manifests as audit artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: validated-skill-manifests
+          path: skills/catalog/*.skill.json
+
+  security-review-gate:
+    name: Security Review Gate
+    runs-on: ubuntu-latest
+    needs: validate-skill-manifests
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Security review required
+        run: |
+          echo "Skill manifests passed automated validation."
+          echo "Repository branch protection should require security and business owner review before merge."
+          echo "Use CODEOWNERS or required reviewers for skills/catalog/*.skill.json."
+
+  publish-approved-skills-placeholder:
+    name: Publish Approved Skills Placeholder
+    runs-on: ubuntu-latest
+    needs: validate-skill-manifests
+    if: github.event_name == 'workflow_dispatch'
+    environment: skill-registry-publish
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Explain publish stage
+        run: |
+          echo "Future implementation:"
+          echo "1. Read approved skill manifests from skills/catalog."
+          echo "2. Generate embeddings for skill descriptions."
+          echo "3. Upsert records into Cosmos DB skill registry."
+          echo "4. Emit deployment audit artifact."
+          echo "This job is intentionally a placeholder until Cosmos SDK upsert logic is added."

@@ -1,0 +1,26 @@
+{
+  "skillId": "marketing-social-post-draft",
+  "name": "Create social media post",
+  "department": "marketing",
+  "taskType": "content_creation",
+  "agentType": "social_media_post_creator",
+  "description": "Drafts channel-specific social posts from approved campaign context and brand guidelines.",
+  "owners": {
+    "business": "marketing-ops",
+    "technical": "ai-platform"
+  },
+  "riskLevel": "medium",
+  "requiresHumanApproval": true,
+  "allowedChannels": ["teams", "office-addin", "hermes"],
+  "allowedDataSources": ["approved-campaign-briefs", "brand-guidelines"],
+  "inputs": ["campaign_brief", "channel", "audience", "tone"],
+  "outputs": ["draft_post", "approval_notes"],
+  "status": "draft",
+  "version": "0.1.0",
+  "review": {
+    "businessApprovedBy": "",
+    "securityApprovedBy": "",
+    "approvedAt": "",
+    "notes": "Draft example. Requires business and security review before approval."
+  }
+}

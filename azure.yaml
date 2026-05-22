@@ -1,0 +1,15 @@
+name: esi-ai-solutions-architect-starter
+metadata:
+  template: esi-ai-solutions-architect-starter@0.1.0
+
+infra:
+  provider: bicep
+  path: infra
+
+services:
+  api:
+    project: src/api
+    host: containerapp
+    language: python
+    docker:
+      path: Dockerfile

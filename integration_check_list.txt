@@ -1,0 +1,6 @@
+1. spin up a hermes agent
+2. get a bot in microsoft teams 
+3. give that bot the ability to work in share point
+4. set up a git repo
+5. set up the ability to push and pull skills/tools into that git repo
+

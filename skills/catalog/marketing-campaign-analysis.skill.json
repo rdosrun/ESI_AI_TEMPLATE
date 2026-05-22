@@ -1,0 +1,26 @@
+{
+  "skillId": "marketing-campaign-analysis",
+  "name": "Analyze marketing campaign performance",
+  "department": "marketing",
+  "taskType": "analysis",
+  "agentType": "marketing_analyst",
+  "description": "Summarizes campaign KPIs, highlights performance drivers, and identifies questions for human review.",
+  "owners": {
+    "business": "marketing-analytics",
+    "technical": "ai-platform"
+  },
+  "riskLevel": "medium",
+  "requiresHumanApproval": false,
+  "allowedChannels": ["teams", "excel-addin", "hermes"],
+  "allowedDataSources": ["approved-campaign-kpi-export", "approved-audience-segments"],
+  "inputs": ["campaign_metrics", "date_range", "comparison_period"],
+  "outputs": ["kpi_summary", "trend_explanation", "follow_up_questions"],
+  "status": "draft",
+  "version": "0.1.0",
+  "review": {
+    "businessApprovedBy": "",
+    "securityApprovedBy": "",
+    "approvedAt": "",
+    "notes": "Draft example. Requires data source and access review before approval."
+  }
+}
