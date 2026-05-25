@@ -11,7 +11,7 @@ This architecture gives business teams a repeatable AI proof-of-concept environm
 3. A future ingestion process will extract text, chunk it, and index it in Azure AI Search.
 4. A user sends a question to `/ask`.
 5. The API will retrieve relevant document chunks from Azure AI Search.
-6. The API will send the question and retrieved context to an approved Azure OpenAI or Azure AI Foundry model deployment.
+6. The API will send the question and retrieved context to an approved Azure AI Foundry / Azure OpenAI model deployment.
 7. The API returns an answer with citations and logs telemetry for KPI reporting.
 8. For agentic workflows, an agent can call `/skills/search` or `/skills/groups` to find approved skills by department, task, and natural language similarity.
 
@@ -32,19 +32,20 @@ The FastAPI service acts as the governed backend. It keeps model access, retriev
 | Service | Business Reason |
 | --- | --- |
 | Azure Container Apps | Hosts the API without a server management burden. This keeps the pilot fast to deploy and easy to scale down. |
-| Azure Container Registry | Stores the API Docker image so deployments use a known, repeatable build artifact. |
+| Azure Container Registry | Stores the approved API image so deployments use a known, repeatable build artifact. |
 | Managed Identity | Lets the API access Azure services without storing passwords in code or configuration files. |
 | Azure Storage Account | Stores uploaded business documents as the source of truth for future indexing. |
 | Blob Container | Keeps proof-of-concept documents isolated from other files and makes retention rules easier to apply. |
 | Azure AI Search | Provides document retrieval for RAG workflows so answers can be grounded in approved content. |
 | Azure Cosmos DB for NoSQL with vector search | Stores agent skills, metadata, and skill groups so agents can find the right capability using natural language. |
-| Azure OpenAI / Azure AI Foundry Placeholder | Marks where the approved model endpoint and deployment are connected after governance review. |
+| Azure AI Foundry / Azure OpenAI | Provides the governed model endpoint. The starter can connect to an existing approved endpoint or optionally deploy a small chat model deployment for demos. |
 | Azure Key Vault | Provides a governed place for future secrets or vendor credentials when managed identity is not enough. |
 | Log Analytics | Centralizes logs so support teams can investigate issues. |
 | Application Insights | Tracks API health, latency, errors, and usage for stakeholder reporting. |
 
 See [end-user-consumption.md](/home/richardh/Documents/interview_prep/ESI/ESI_AI_TEMPLATE/docs/end-user-consumption.md) for the SharePoint, Office, and agentic consumption patterns.
 See [agent-skill-registry.md](/home/richardh/Documents/interview_prep/ESI/ESI_AI_TEMPLATE/docs/agent-skill-registry.md) for skill lookup and grouping.
+See [azure-container-registry.md](/home/richardh/Documents/interview_prep/ESI/ESI_AI_TEMPLATE/docs/azure-container-registry.md) for the image registry and traceability notes.
 
 ## Security Posture
 
@@ -52,8 +53,9 @@ See [agent-skill-registry.md](/home/richardh/Documents/interview_prep/ESI/ESI_AI
 - The API uses managed identity for future Azure service access.
 - Blob public access is disabled.
 - Container registry admin user is disabled.
+- The API image is stored in Azure Container Registry with metadata labels for traceability.
 - Key Vault uses RBAC authorization.
-- Model values are parameters so teams can connect approved resources later.
+- Model values are parameters, and managed identity is assigned the Cognitive Services OpenAI User role when the starter provisions the model resource.
 
 ## Cost Posture
 
@@ -72,7 +74,7 @@ Review Azure pricing before deploying to a paid subscription.
 
 - Authentication and authorization are not implemented yet.
 - Document parsing, chunking, and indexing are placeholders.
-- The `/ask` endpoint does not call a model yet.
+- The `/ask` endpoint checks model configuration but does not call a model yet.
 - The `/skills/search` endpoint does not query Cosmos DB vector search yet.
 - Private networking is not configured.
 - Automated evaluation and red-team test cases are not included yet.

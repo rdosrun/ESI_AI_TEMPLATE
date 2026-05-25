@@ -17,6 +17,15 @@
     "azureOpenAiApiVersion": {
       "value": "${AZURE_OPENAI_API_VERSION='2024-10-21'}"
     },
+    "deployAiModel": {
+      "value": "${DEPLOY_AI_MODEL=false}"
+    },
+    "azureOpenAiModelName": {
+      "value": "${AZURE_OPENAI_MODEL_NAME='gpt-4o-mini'}"
+    },
+    "azureOpenAiModelVersion": {
+      "value": "${AZURE_OPENAI_MODEL_VERSION='2024-07-18'}"
+    },
     "enableSkillRegistry": {
       "value": true
     }

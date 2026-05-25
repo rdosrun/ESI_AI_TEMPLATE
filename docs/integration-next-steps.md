@@ -83,6 +83,7 @@ This checklist turns the README next steps into an ordered integration plan. The
 
 - [ ] Add budget alerts and cost review notes for Search, Cosmos DB, Log Analytics, model calls, and Container Apps.
 - [ ] Add dashboards or saved queries for adoption, latency, failures, answer quality, and cost per answer.
+- [ ] Replace placeholder image source and license labels before publishing images outside the demo repository.
 - [ ] Add deployment promotion guidance for dev, test, and production environments.
 - [ ] Add rollback and teardown instructions for demo environments.
 - [ ] Update the demo script once real retrieval, model calls, skill lookup, and the first user channel are working.
@@ -95,4 +96,3 @@ This checklist turns the README next steps into an ordered integration plan. The
 - [ ] Configure the approved model endpoint through `azd env set`.
 - [ ] Add one channel contract, preferably Teams or Hermes if the interview story centers on agentic workflows.
 - [ ] Add API contract tests before expanding the integration surface.
-

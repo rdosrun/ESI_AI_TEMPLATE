@@ -2,7 +2,7 @@
 
 This repository is an interview-ready starter kit for deploying a repeatable Azure AI proof-of-concept environment. It is designed for business teams that want to test document search, LLM question answering, workflow automation, and KPI tracking without starting from a blank page.
 
-The project uses Azure Developer CLI, Bicep, Docker, Azure Container Apps, FastAPI, Azure AI Search, Azure Storage, Azure Key Vault, Application Insights, and Log Analytics. It keeps the first version simple so the architecture is easy to explain in an interview and safe to extend after a discovery session.
+The project uses Azure Developer CLI, Bicep, Docker, Azure Container Registry, Azure Container Apps, FastAPI, Azure AI Search, Azure Storage, Azure Key Vault, Application Insights, and Log Analytics. It keeps the first version simple so the architecture is easy to explain in an interview and safe to extend after a discovery session.
 
 ## Problem It Solves
 
@@ -16,7 +16,7 @@ Business teams often ask for AI pilots before the operating model is clear. This
 
 ## Architecture Overview
 
-The API runs in Azure Container Apps and exposes placeholder endpoints for document upload, question answering, agent skill lookup, and skill grouping. Uploaded documents are intended to land in Azure Blob Storage. Azure AI Search is provisioned for future indexing and retrieval. Azure Cosmos DB for NoSQL is provisioned as a vector-capable skill registry so agents can find the right skill from a natural language request. Azure OpenAI or Azure AI Foundry connection values are passed as parameters and stored as Container App environment variables; no secrets are hardcoded.
+The API runs in Azure Container Apps and exposes placeholder endpoints for document upload, question answering, agent skill lookup, and skill grouping. Uploaded documents are intended to land in Azure Blob Storage. Azure AI Search is provisioned for future indexing and retrieval. Azure Cosmos DB for NoSQL is provisioned as a vector-capable skill registry so agents can find the right skill from a natural language request. Azure AI Foundry / Azure OpenAI can either be connected to an existing approved endpoint or provisioned as an optional model resource; no secrets are hardcoded.
 
 End users are expected to consume AI through familiar business surfaces such as SharePoint, Microsoft Teams, Word, Excel, PowerPoint, Power Automate, Microsoft 365 Copilot extensions, or an agentic orchestrator such as Hermes. The API remains the governed backend that handles retrieval, model calls, telemetry, and policy controls. See [docs/end-user-consumption.md](/home/richardh/Documents/interview_prep/ESI/ESI_AI_TEMPLATE/docs/end-user-consumption.md).
 
@@ -27,11 +27,11 @@ Core services:
 - **Azure Storage Account** stores source documents for future ingestion and auditability.
 - **Blob Container** separates uploaded documents from application code and makes ingestion repeatable.
 - **Azure AI Search** prepares the environment for document search and RAG retrieval.
-- **Azure OpenAI / Azure AI Foundry placeholders** document where model endpoint and deployment settings belong once approved.
+- **Azure AI Foundry / Azure OpenAI** optionally deploys a model endpoint and chat deployment, or connects the API to an existing approved endpoint.
 - **Azure Key Vault** provides a controlled place for future secrets, vendor keys, or connection values.
 - **Log Analytics** centralizes Container Apps platform logs.
 - **Application Insights** captures API telemetry, latency, dependency health, and demo KPIs.
-- **Azure Container Registry** stores the Docker image that Azure Container Apps runs.
+- **Azure Container Registry** stores the approved API image that Azure Container Apps runs.
 - **Azure Cosmos DB for NoSQL with vector search** stores agent skills and skill groups so agents can find the right capability from natural language requests.
 
 Consumption options:
@@ -91,6 +91,8 @@ Build the Docker image locally:
 ./scripts/docker-local.sh
 ```
 
+Azure Container Registry stores the approved API image used by Azure Container Apps. See [docs/azure-container-registry.md](/home/richardh/Documents/interview_prep/ESI/ESI_AI_TEMPLATE/docs/azure-container-registry.md).
+
 ## Azure Deployment With azd
 
 Initialize an azd environment:
@@ -101,13 +103,24 @@ azd env new dev
 azd env set AZURE_LOCATION eastus
 ```
 
-Optional model placeholders, when you have approved Azure OpenAI or Azure AI Foundry values:
+Option A: connect to an existing approved Azure AI Foundry / Azure OpenAI endpoint:
 
 ```bash
 azd env set AZURE_OPENAI_ENDPOINT https://your-resource.openai.azure.com/
 azd env set AZURE_OPENAI_DEPLOYMENT_NAME your-chat-model-deployment
 azd env set AZURE_OPENAI_API_VERSION 2024-10-21
 ```
+
+Option B: let this starter provision a small Azure AI Foundry / Azure OpenAI model deployment:
+
+```bash
+azd env set DEPLOY_AI_MODEL true
+azd env set AZURE_OPENAI_DEPLOYMENT_NAME gpt-4o-mini
+azd env set AZURE_OPENAI_MODEL_NAME gpt-4o-mini
+azd env set AZURE_OPENAI_MODEL_VERSION 2024-07-18
+```
+
+TODO: Confirm the approved region, model name, and model version for your Azure subscription before enabling model deployment. Model availability and quota vary by region and tenant.
 
 Provision and deploy:
 
@@ -169,7 +182,7 @@ For an ordered integration checklist, see [docs/integration-next-steps.md](/home
 - Add seed data and vector search implementation for the Cosmos DB agent skill registry.
 - Add Cosmos DB skill publishing from approved Git manifests.
 - Create an Azure AI Search index, skillset, and indexer for the uploaded documents.
-- Wire `/ask` to Azure OpenAI or Azure AI Foundry with retrieval context.
+- Wire `/ask` to Azure AI Foundry / Azure OpenAI with retrieval context and managed identity authentication.
 - Add authentication and role-based access for business users.
 - Add automated tests and contract tests for the API.
 - Add evaluation datasets for answer quality, hallucination risk, and citation coverage.

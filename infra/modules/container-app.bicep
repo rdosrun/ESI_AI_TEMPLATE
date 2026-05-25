@@ -122,7 +122,15 @@ resource app 'Microsoft.App/containerApps@2024-03-01' = {
               value: azureOpenAiEndpoint
             }
             {
+              name: 'AZURE_AI_FOUNDRY_ENDPOINT'
+              value: azureOpenAiEndpoint
+            }
+            {
               name: 'AZURE_OPENAI_DEPLOYMENT_NAME'
+              value: azureOpenAiDeploymentName
+            }
+            {
+              name: 'AZURE_AI_FOUNDRY_DEPLOYMENT_NAME'
               value: azureOpenAiDeploymentName
             }
             {

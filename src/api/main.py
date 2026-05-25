@@ -99,13 +99,17 @@ async def upload(file: Annotated[UploadFile, File(...)]) -> dict[str, object]:
 @app.post("/ask", response_model=AskResponse)
 async def ask(request: AskRequest) -> AskResponse:
     # TODO: Retrieve relevant chunks from Azure AI Search and call the approved model deployment.
+    model_endpoint = os.getenv("AZURE_AI_FOUNDRY_ENDPOINT") or os.getenv("AZURE_OPENAI_ENDPOINT")
+    model_deployment = os.getenv("AZURE_AI_FOUNDRY_DEPLOYMENT_NAME") or os.getenv(
+        "AZURE_OPENAI_DEPLOYMENT_NAME"
+    )
     openai_ready = bool(
-        os.getenv("AZURE_OPENAI_ENDPOINT") and os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME")
+        model_endpoint and model_deployment
     )
     readiness_note = (
-        "Model placeholders are configured."
+        "Azure AI Foundry model configuration is present."
         if openai_ready
-        else "Model placeholders are not configured yet."
+        else "Azure AI Foundry model configuration is not present yet."
     )
 
     return AskResponse(

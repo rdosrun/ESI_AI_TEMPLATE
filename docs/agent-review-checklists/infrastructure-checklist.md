@@ -15,7 +15,8 @@ Use this checklist to review the Bicep and azd deployment work.
 - [x] Container Apps Environment module exists.
 - [x] Container App module exists.
 - [x] Managed Identity module exists.
-- [x] Container Registry module exists so Container Apps can run the Docker image.
+- [x] Container Registry module exists so Container Apps can run the approved API image.
+- [x] Azure Container Registry documentation exists for image traceability.
 - [x] Business-purpose comments were added near each Azure service.
 - [x] No local Azure state is committed.
 
