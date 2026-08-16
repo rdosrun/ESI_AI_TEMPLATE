@@ -14,6 +14,8 @@ var accountName = toLower(take('${namePrefix}${uniqueString(resourceGroup().id)}
 var databaseName = 'agent-skills'
 var skillsContainerName = 'skills'
 var groupsContainerName = 'skill-groups'
+var architecturesContainerName = 'architectures'
+var deploymentsContainerName = 'agent-deployments'
 
 // Business purpose: stores agent skills, metadata, department/task groupings, and vector embeddings
 // so an agent can find the right skill using natural language instead of hardcoded routing.
@@ -144,6 +146,68 @@ resource groups 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2
   }
 }
 
+// Business purpose: stores versioned visual architectures owned by an authenticated user.
+resource architectures 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2024-05-15' = {
+  name: architecturesContainerName
+  parent: database
+  properties: {
+    resource: {
+      id: architecturesContainerName
+      partitionKey: {
+        paths: [
+          '/ownerId'
+        ]
+        kind: 'Hash'
+      }
+      indexingPolicy: {
+        indexingMode: 'consistent'
+        automatic: true
+        includedPaths: [
+          {
+            path: '/*'
+          }
+        ]
+        excludedPaths: [
+          {
+            path: '/"_etag"/?'
+          }
+        ]
+      }
+    }
+  }
+}
+
+// Business purpose: creates an immutable audit trail between an architecture version and runtime work.
+resource deployments 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2024-05-15' = {
+  name: deploymentsContainerName
+  parent: database
+  properties: {
+    resource: {
+      id: deploymentsContainerName
+      partitionKey: {
+        paths: [
+          '/architectureId'
+        ]
+        kind: 'Hash'
+      }
+      indexingPolicy: {
+        indexingMode: 'consistent'
+        automatic: true
+        includedPaths: [
+          {
+            path: '/*'
+          }
+        ]
+        excludedPaths: [
+          {
+            path: '/"_etag"/?'
+          }
+        ]
+      }
+    }
+  }
+}
+
 // Business purpose: lets the API manage skill lookup records without storing Cosmos keys.
 resource dataContributor 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2024-05-15' = {
   name: guid(account.id, principalId, 'Cosmos DB Built-in Data Contributor')
@@ -160,3 +224,5 @@ output accountName string = account.name
 output databaseName string = database.name
 output skillsContainerName string = skills.name
 output groupsContainerName string = groups.name
+output architecturesContainerName string = architectures.name
+output deploymentsContainerName string = deployments.name

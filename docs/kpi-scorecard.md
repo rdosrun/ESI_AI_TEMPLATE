@@ -22,4 +22,4 @@ Use this scorecard to connect the AI proof of concept to business outcomes. Repl
 
 ## Demo Placeholder
 
-The `/metrics` endpoint returns a simple KPI structure so stakeholders can see the measurement plan before the full telemetry pipeline is implemented.
+The `get_metrics` MCP tool returns a simple KPI structure so stakeholders can see the measurement plan before the full telemetry pipeline is implemented.

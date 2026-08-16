@@ -13,7 +13,7 @@ Each file in `skills/catalog/` is a skill manifest. A skill is not available to 
 5. Receive security review.
 6. Merge to the approved branch.
 7. Publish to Cosmos DB skill registry.
-8. Agents discover it through `/skills/search` or `/skills/groups`.
+8. Agents discover it through the `search_skills` or `list_skill_groups` MCP tools.
 
 ## Current Examples
 

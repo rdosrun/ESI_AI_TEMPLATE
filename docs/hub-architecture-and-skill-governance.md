@@ -9,7 +9,7 @@ This document explains how the starter kit should connect to the rest of an AI h
 | Layer | Responsibility | Current Implementation |
 | --- | --- | --- |
 | Consumption layer | Where end users or agents interact with AI. | SharePoint, Microsoft 365, Teams, Power Automate, Office add-ins, Copilot extensions, or Hermes-style agents. |
-| API control layer | Central policy and routing layer. | FastAPI app hosted in Azure Container Apps. |
+| MCP control layer | Central policy, routing, and agent tool-discovery layer. | FastMCP server hosted in Azure Container Apps. |
 | Document knowledge layer | Stores and retrieves approved business documents. | Azure Blob Storage plus Azure AI Search readiness. |
 | Skill registry layer | Stores approved skills, skill groups, metadata, and future embeddings. | Cosmos DB for NoSQL with vector search enabled. |
 | Model layer | Provides LLM and embedding capabilities. | Azure OpenAI / Azure AI Foundry placeholders. |
@@ -21,7 +21,7 @@ This document explains how the starter kit should connect to the rest of an AI h
 The hub should treat this API as a governed backend service, not as a one-off demo endpoint.
 
 1. A user works in SharePoint, Teams, Office, Power Automate, Copilot, or Hermes.
-2. The user-facing channel sends a request to the FastAPI service.
+2. The agent or user-facing channel connects to the FastMCP Streamable HTTP endpoint.
 3. The API decides whether the request needs document retrieval, skill lookup, model completion, or human escalation.
 4. For document questions, the API searches Azure AI Search.
 5. For skill/tool selection, the API searches Cosmos DB skill registry by metadata and vector similarity.
@@ -52,12 +52,13 @@ A future model should not guess how to connect to the hub. It needs explicit con
 
 | Endpoint | Future Purpose |
 | --- | --- |
-| `GET /health` | Check whether the service is alive. |
-| `GET /metrics` | Return KPI and operational metrics. |
-| `POST /upload` | Accept approved documents for future ingestion. |
-| `POST /ask` | Answer business questions using retrieval and model calls. |
-| `POST /skills/search` | Find relevant approved skills from natural language. |
-| `POST /skills/groups` | Return department/task skill bundles for agent routing. |
+| `GET /health` | Unauthenticated operational health probe. |
+| `POST /mcp` | Streamable HTTP MCP transport used for tool discovery and calls. |
+| `get_metrics` | Return KPI and operational metrics. |
+| `upload_document` | Register approved documents for future ingestion. |
+| `ask_question` | Answer business questions using retrieval and model calls. |
+| `search_skills` | Find relevant approved skills from natural language. |
+| `list_skill_groups` | Return department/task skill bundles for agent routing. |
 
 ### Required Identity Pattern
 
@@ -93,7 +94,7 @@ The skill pipeline should make Git the source of truth. The skill registry shoul
 5. Business owner confirms the skill is useful and correctly grouped.
 6. Approved pull request merges to `main`.
 7. Deployment job publishes approved skills into Cosmos DB skill registry.
-8. Agents discover approved skills through `/skills/search` or `/skills/groups`.
+8. Agents discover approved skills through `search_skills` or `list_skill_groups`.
 9. Telemetry records skill lookup and execution for future audits.
 
 ### Required Gates
@@ -167,7 +168,7 @@ The repository includes a validation workflow for skills. A future deployment jo
 Implemented now:
 
 - Skill registry infrastructure in Cosmos DB.
-- API placeholder contracts for skill search and groups.
+- MCP tool contracts for skill search and groups.
 - Skill manifest examples.
 - Skill validation script.
 - CI workflow for validating skill manifests.

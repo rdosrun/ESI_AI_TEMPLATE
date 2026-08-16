@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This starter kit uses Azure Container Registry (ACR) as the controlled image store for the FastAPI service. The business reason is repeatability: the team can build the API once, store the approved image in Azure, and deploy that same artifact to Azure Container Apps.
+This starter kit uses Azure Container Registry (ACR) as the controlled image store for the FastMCP service. The business reason is repeatability: the team can build the server once, store the approved image in Azure, and deploy that same artifact to Azure Container Apps.
 
 ## How This Repo Uses ACR
 

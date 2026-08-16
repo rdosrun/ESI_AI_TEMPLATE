@@ -8,6 +8,9 @@
     "location": {
       "value": "${AZURE_LOCATION}"
     },
+    "agentBuilderLocation": {
+      "value": "${AGENT_BUILDER_LOCATION='eastus2'}"
+    },
     "azureOpenAiEndpoint": {
       "value": "${AZURE_OPENAI_ENDPOINT=''}"
     },
@@ -16,6 +19,9 @@
     },
     "azureOpenAiApiVersion": {
       "value": "${AZURE_OPENAI_API_VERSION='2024-10-21'}"
+    },
+    "agentApiAllowedHosts": {
+      "value": "${AGENT_API_ALLOWED_HOSTS=''}"
     },
     "deployAiModel": {
       "value": "${DEPLOY_AI_MODEL=false}"

@@ -13,12 +13,12 @@ Business stakeholders, delivery leads, and technical interviewers evaluating AI 
 1. Show the README and explain the business problem.
 2. Open the architecture document and walk through each Azure service in business terms.
 3. Show `infra/main.bicep` and explain that resources are deployed repeatably with azd.
-4. Show `src/api/main.py` and explain the current API contract.
+4. Show `src/api/main.py` and explain the MCP tool contract.
 5. Run `GET /health` to prove the service is alive.
-6. Run `GET /metrics` to show KPI planning.
-7. Run `POST /upload` with a sample document and explain the future ingestion path.
-8. Run `POST /ask` and explain the future RAG path.
-9. Run `POST /skills/search` and explain natural language skill lookup for agents.
+6. Connect an MCP Inspector or agent to `/api/mcp` and list tools.
+7. Call `get_metrics` to show KPI planning.
+8. Call `upload_document` and `ask_question` to explain the future RAG path.
+9. Call `search_skills` and explain natural language skill lookup for agents.
 10. Show the end-user consumption patterns for SharePoint, Microsoft 365, Power Automate, and Hermes.
 11. Show the CI/CD workflow and explain validation before deployment.
 12. Close with the production gaps and next steps.

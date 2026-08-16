@@ -6,14 +6,14 @@ This architecture gives business teams a repeatable AI proof-of-concept environm
 
 ## High-Level Flow
 
-1. A user or workflow sends a document to the FastAPI `/upload` endpoint.
+1. An agent or workflow calls the FastMCP `upload_document` tool.
 2. The API will store the document in Azure Blob Storage.
 3. A future ingestion process will extract text, chunk it, and index it in Azure AI Search.
-4. A user sends a question to `/ask`.
+4. An agent sends a question to the `ask_question` tool.
 5. The API will retrieve relevant document chunks from Azure AI Search.
 6. The API will send the question and retrieved context to an approved Azure AI Foundry / Azure OpenAI model deployment.
 7. The API returns an answer with citations and logs telemetry for KPI reporting.
-8. For agentic workflows, an agent can call `/skills/search` or `/skills/groups` to find approved skills by department, task, and natural language similarity.
+8. For agentic workflows, an agent can call `search_skills` or `list_skill_groups` to find approved skills by department, task, and natural language similarity.
 
 ## End-User Consumption
 
@@ -25,7 +25,7 @@ Users should not need to know that Azure OpenAI, Azure AI Search, or Container A
 - Power Automate for workflow-triggered AI actions.
 - Agentic platforms such as Hermes for multi-step planning, retrieval, drafting, and escalation.
 
-The FastAPI service acts as the governed backend. It keeps model access, retrieval logic, telemetry, and future policy checks in one place.
+The FastMCP server acts as the governed backend. It gives MCP-compatible agents typed tool discovery while keeping model access, retrieval logic, telemetry, and future policy checks in one place.
 
 ## Service Responsibilities
 
@@ -74,8 +74,8 @@ Review Azure pricing before deploying to a paid subscription.
 
 - Authentication and authorization are not implemented yet.
 - Document parsing, chunking, and indexing are placeholders.
-- The `/ask` endpoint checks model configuration but does not call a model yet.
-- The `/skills/search` endpoint does not query Cosmos DB vector search yet.
+- The `ask_question` tool checks model configuration but does not call a model yet.
+- The `search_skills` tool does not query Cosmos DB vector search yet.
 - Private networking is not configured.
 - Automated evaluation and red-team test cases are not included yet.
 - Budget alerts and operational runbooks should be added before production.

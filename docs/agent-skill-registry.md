@@ -71,19 +71,19 @@ Azure AI Search still handles document retrieval for RAG. Cosmos DB handles agen
 ## Lookup Flow
 
 1. A user asks an agent to perform a task.
-2. The agent calls `POST /skills/search` with the natural language request.
+2. The agent calls the `search_skills` MCP tool with the natural language request.
 3. The API embeds the request.
 4. Cosmos DB vector search finds similar skills.
 5. The API applies filters such as department, task type, risk level, and allowed channel.
 6. The agent receives ranked skills or a recommended skill group.
 7. The agent executes only approved skills for that group.
 
-## API Placeholders
+## MCP Tool Placeholders
 
-The starter API includes:
+The starter MCP server includes:
 
-- `POST /skills/search` for natural language skill lookup.
-- `POST /skills/groups` for department/task group discovery.
+- `search_skills` for natural language skill lookup.
+- `list_skill_groups` for department/task group discovery.
 
 These endpoints currently return placeholder data so the contract can be reviewed before implementing persistence.
 
@@ -111,6 +111,6 @@ These endpoints currently return placeholder data so the contract can be reviewe
 - Add Cosmos SDK dependency after choosing the Python package version.
 - Add embedding generation for skill descriptions.
 - Seed starter skill and skill-group records.
-- Implement vector search in `/skills/search`.
+- Implement vector search in `search_skills`.
 - Add role/channel filters before returning executable skills.
 - Add audit telemetry for skill selection and execution.

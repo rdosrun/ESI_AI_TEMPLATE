@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:esi-ai:agent-architecture:1.0",
+  "title": "Agent Architecture",
+  "description": "Version 1 contract exported by the Agent Architecture Builder.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "name", "updatedAt", "nodes", "edges"],
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/node"
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/edge"
+      }
+    }
+  },
+  "$defs": {
+    "position": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y"],
+      "properties": {
+        "x": {"type": "number", "minimum": 0},
+        "y": {"type": "number", "minimum": 0}
+      }
+    },
+    "branch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["condition", "label"],
+      "properties": {
+        "condition": {"type": "string"},
+        "label": {"type": "string", "maxLength": 120}
+      }
+    },
+    "nodeConfig": {
+      "type": "object",
+      "properties": {
+        "instructions": {"type": "string", "maxLength": 20000},
+        "integrationRefs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "branches": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/branch"}
+        },
+        "endpoint": {"type": "string", "maxLength": 2048},
+        "protocol": {
+          "type": "string",
+          "enum": ["GET", "POST", "PUT", "PATCH", "DELETE", "streamable-http", "sse", "stdio"]
+        },
+        "toolName": {"type": "string", "maxLength": 200},
+        "credentialReference": {
+          "type": "string",
+          "description": "A Key Vault secret name or environment-variable reference, never a raw credential.",
+          "maxLength": 200
+        },
+        "credentialHeader": {"type": "string", "maxLength": 100},
+        "credentialScheme": {"type": "string", "maxLength": 50},
+        "requestBodyTemplate": {
+          "type": "string",
+          "description": "JSON body template. Use {{input}} for the runner prompt.",
+          "maxLength": 20000
+        }
+      },
+      "additionalProperties": true
+    },
+    "node": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "position", "title", "description", "config"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "type": {
+          "type": "string",
+          "enum": ["start", "agent", "condition", "loop", "api", "tool", "input", "output"]
+        },
+        "position": {"$ref": "#/$defs/position"},
+        "title": {"type": "string", "minLength": 1, "maxLength": 200},
+        "description": {"type": "string", "maxLength": 2000},
+        "config": {"$ref": "#/$defs/nodeConfig"}
+      }
+    },
+    "edge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "from", "to", "label"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "from": {"type": "string", "minLength": 1},
+        "to": {"type": "string", "minLength": 1},
+        "label": {"type": "string", "maxLength": 120}
+      }
+    }
+  }
+}

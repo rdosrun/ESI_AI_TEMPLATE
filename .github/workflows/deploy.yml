@@ -37,6 +37,20 @@ jobs:
           inlineScript: |
             az bicep build --file infra/main.bicep
 
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Validate agent builder
+        working-directory: agent_builder
+        run: |
+          flutter pub get
+          flutter analyze
+          flutter test
+          flutter build web --release
+
   deploy:
     name: Deploy With azd
     runs-on: ubuntu-latest
@@ -49,6 +63,12 @@ jobs:
 
       - name: Install azd
         uses: Azure/setup-azd@v2
+
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
 
       - name: Azure login
         uses: azure/login@v2

@@ -20,7 +20,7 @@ This checklist turns the README next steps into an ordered integration plan. The
 
 ## 3. Implement Document Ingestion
 
-- [ ] Wire `POST /upload` to stream files into the provisioned Blob Storage container using managed identity.
+- [ ] Wire `upload_document` to retrieve approved source content and stream it into Blob Storage using managed identity.
 - [ ] Add supported file type validation and clear rejection messages.
 - [ ] Add document metadata, including source, owner, upload time, content type, and approval status.
 - [ ] Add extraction and chunking for the initial document types.
@@ -32,14 +32,14 @@ This checklist turns the README next steps into an ordered integration plan. The
 - [ ] Define the Azure AI Search index schema for chunks, citations, source URLs, document owners, modified dates, and security labels.
 - [ ] Create the index, skillset or ingestion process, and indexer strategy.
 - [ ] Push approved chunks into Azure AI Search from Blob Storage or the ingestion worker.
-- [ ] Add retrieval code for `/ask`, including top-k search, filters, and citation source assembly.
+- [ ] Add retrieval code for `ask_question`, including top-k search, filters, and citation source assembly.
 - [ ] Add citation validation so generated answers only cite retrieved approved sources.
 
 ## 5. Wire Grounded Answer Generation
 
 - [ ] Add the Azure SDK dependency needed for the chosen model endpoint.
 - [ ] Build prompt assembly that includes user question, workflow context, retrieved chunks, and citation instructions.
-- [ ] Call the approved model deployment from `/ask`.
+- [ ] Call the approved model deployment from `ask_question`.
 - [ ] Return answer, status, next steps, and citations using the existing response contract.
 - [ ] Add fallback behavior when no relevant content is found.
 - [ ] Log latency, retrieval count, model readiness, and answer outcome to Application Insights.
@@ -49,8 +49,8 @@ This checklist turns the README next steps into an ordered integration plan. The
 - [ ] Add the Cosmos DB SDK dependency.
 - [ ] Seed Cosmos DB with approved skill and skill-group records from `skills/catalog`.
 - [ ] Generate embeddings for skill descriptions after the embedding model is approved.
-- [ ] Implement vector lookup in `POST /skills/search`.
-- [ ] Implement group lookup in `POST /skills/groups`.
+- [ ] Implement vector lookup in `search_skills`.
+- [ ] Implement group lookup in `list_skill_groups`.
 - [ ] Apply department, task type, channel, risk, and approval filters before returning executable skills.
 - [ ] Log skill selection telemetry for audit and KPI reporting.
 
@@ -65,14 +65,14 @@ This checklist turns the README next steps into an ordered integration plan. The
 ## 8. Integrate The First User Channel
 
 - [ ] Create the first channel contract for Teams, Copilot extension, Office add-in, Power Automate, or Hermes.
-- [ ] Map channel inputs to `/ask`, `/upload`, `/skills/search`, and `/skills/groups`.
+- [ ] Map channel inputs to the MCP tools exposed at `/mcp`.
 - [ ] Decide how citations, confidence, and human escalation appear to end users.
 - [ ] Add a demo-ready example request and response for the selected channel.
 - [ ] Document channel-specific setup steps and tenant permissions.
 
 ## 9. Add Tests And Evaluation
 
-- [ ] Add FastAPI contract tests for health, metrics, upload, ask, skill search, and skill groups.
+- [ ] Add MCP contract tests for tool discovery and calls plus an HTTP health-probe test.
 - [ ] Add smoke tests for deployed Container Apps endpoints.
 - [ ] Add ingestion tests with small approved sample documents.
 - [ ] Create an evaluation dataset with expected answers, citations, and escalation cases.
@@ -90,9 +90,9 @@ This checklist turns the README next steps into an ordered integration plan. The
 
 ## Recommended First Sprint
 
-- [ ] Persist `/upload` files to Blob Storage.
+- [ ] Persist documents submitted through `upload_document` to Blob Storage.
 - [ ] Create the first Azure AI Search index schema.
-- [ ] Wire `/ask` to retrieve indexed chunks and return citations.
+- [ ] Wire `ask_question` to retrieve indexed chunks and return citations.
 - [ ] Configure the approved model endpoint through `azd env set`.
 - [ ] Add one channel contract, preferably Teams or Hermes if the interview story centers on agentic workflows.
-- [ ] Add API contract tests before expanding the integration surface.
+- [ ] Add MCP contract tests before expanding the integration surface.

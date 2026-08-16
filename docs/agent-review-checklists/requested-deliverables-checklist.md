@@ -24,9 +24,9 @@ This checklist maps the original requested items to the files added or updated.
 - [x] Use clear parameters and TODO comments where service values are unknown.
 - [x] Add business-purpose comments for Azure services.
 - [x] Include `GET /health`.
-- [x] Include `GET /metrics`.
-- [x] Include `POST /upload` placeholder.
-- [x] Include `POST /ask` placeholder.
+- [x] Include `get_metrics` MCP tool.
+- [x] Include `upload_document` MCP tool placeholder.
+- [x] Include `ask_question` MCP tool placeholder.
 - [x] Avoid real secrets and credentials.
 - [x] Ignore local Azure state, environment files, and Codex session files.
 - [x] Create additional agent review checklist files.
@@ -34,7 +34,7 @@ This checklist maps the original requested items to the files added or updated.
 - [x] Add teardown script for deleting and purging demo Azure resources.
 - [x] Add end-user consumption documentation for SharePoint, Microsoft 365, and agentic platforms such as Hermes.
 - [x] Add Cosmos DB vector skill registry infrastructure and docs.
-- [x] Add API placeholders for natural language skill lookup and skill groups.
+- [x] Add MCP tools for natural language skill lookup and skill groups.
 - [x] Add hub architecture and skill governance guide.
 - [x] Add skill manifest examples and validation script.
 - [x] Add skill governance CI workflow scaffold.

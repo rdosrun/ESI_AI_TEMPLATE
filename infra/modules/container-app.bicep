@@ -13,6 +13,9 @@ param imageName string
 @description('User-assigned managed identity resource ID.')
 param managedIdentityId string
 
+@description('Client ID for the user-assigned managed identity used by Azure SDK authentication.')
+param managedIdentityClientId string
+
 @description('Azure Container Registry login server.')
 param registryServer string
 
@@ -37,6 +40,12 @@ param skillRegistryDatabaseName string = ''
 @description('Cosmos DB container name for individual agent skills.')
 param skillRegistryContainerName string = ''
 
+@description('Cosmos DB container name for saved agent architectures.')
+param architecturesContainerName string = ''
+
+@description('Cosmos DB container name for agent deployment records.')
+param deploymentsContainerName string = ''
+
 @description('Key Vault URI for future secrets.')
 param keyVaultUri string
 
@@ -48,6 +57,12 @@ param azureOpenAiDeploymentName string = ''
 
 @description('Azure OpenAI API version.')
 param azureOpenAiApiVersion string = '2024-10-21'
+
+@description('Comma-separated browser origins allowed to call the architecture API.')
+param corsAllowedOrigins string = 'http://localhost:8080'
+
+@description('Comma-separated public HTTPS hosts available to deployed API blocks.')
+param agentApiAllowedHosts string = ''
 
 @description('Standard tags for ownership and cost tracking.')
 param tags object = {}
@@ -86,6 +101,10 @@ resource app 'Microsoft.App/containerApps@2024-03-01' = {
           image: imageName
           env: [
             {
+              name: 'AZURE_CLIENT_ID'
+              value: managedIdentityClientId
+            }
+            {
               name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
               value: appInsightsConnectionString
             }
@@ -114,6 +133,14 @@ resource app 'Microsoft.App/containerApps@2024-03-01' = {
               value: skillRegistryContainerName
             }
             {
+              name: 'AZURE_COSMOS_ARCHITECTURES_CONTAINER'
+              value: architecturesContainerName
+            }
+            {
+              name: 'AZURE_COSMOS_DEPLOYMENTS_CONTAINER'
+              value: deploymentsContainerName
+            }
+            {
               name: 'AZURE_KEY_VAULT_URI'
               value: keyVaultUri
             }
@@ -136,6 +163,14 @@ resource app 'Microsoft.App/containerApps@2024-03-01' = {
             {
               name: 'AZURE_OPENAI_API_VERSION'
               value: azureOpenAiApiVersion
+            }
+            {
+              name: 'CORS_ALLOWED_ORIGINS'
+              value: corsAllowedOrigins
+            }
+            {
+              name: 'AGENT_API_ALLOWED_HOSTS'
+              value: agentApiAllowedHosts
             }
           ]
           resources: {

@@ -7,9 +7,18 @@ infra:
   path: infra
 
 services:
+  agent-builder:
+    project: agent_builder
+    host: staticwebapp
+    dist: build/web
+    hooks:
+      prepackage:
+        shell: sh
+        run: flutter pub get && flutter build web --release
   api:
     project: src/api
     host: containerapp
     language: python
     docker:
       path: Dockerfile
+      context: ../..

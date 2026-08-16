@@ -6,6 +6,9 @@ param environmentName string
 @description('Azure region for all resources.')
 param location string = resourceGroup().location
 
+@description('Azure region for the Agent Builder Static Web App. Static Web Apps is available in a smaller set of regions than the other services.')
+param agentBuilderLocation string = 'eastus2'
+
 @description('Optional existing Azure OpenAI or Azure AI Foundry endpoint. Leave blank when deployAiModel is true.')
 param azureOpenAiEndpoint string = ''
 
@@ -30,8 +33,15 @@ param azureOpenAiModelVersion string = '2024-07-18'
 @description('Azure OpenAI API version used by the application.')
 param azureOpenAiApiVersion string = '2024-10-21'
 
+@description('Comma-separated HTTPS hostnames that deployed API blocks may call. Wildcards may cover a subdomain suffix, for example *.example.com.')
+param agentApiAllowedHosts string = ''
+
 var workloadName = 'esi-ai'
-var baseName = '${workloadName}-${environmentName}'
+// Azure resource naming rules are stricter than azd environment naming rules.
+// Preserve the original environment name in tags, but normalize it for resource names.
+var safeEnvironmentName = toLower(replace(environmentName, '_', '-'))
+var baseName = '${workloadName}-${safeEnvironmentName}'
+var compactNamePrefix = replace('${workloadName}${safeEnvironmentName}', '-', '')
 var tags = {
   'azd-env-name': environmentName
   workload: workloadName
@@ -70,7 +80,7 @@ module aiModel 'modules/ai-foundry-openai.bicep' = if (deployAiModel) {
   name: 'ai-foundry-openai'
   params: {
     location: location
-    environmentName: environmentName
+    environmentName: safeEnvironmentName
     projectName: workloadName
     modelDeploymentName: azureOpenAiDeploymentName
     modelName: azureOpenAiModelName
@@ -85,7 +95,7 @@ var resolvedAzureOpenAiEndpoint = deployAiModel ? aiModel!.outputs.endpoint : az
 module storage 'modules/storage.bicep' = {
   name: 'storage'
   params: {
-    namePrefix: replace('${workloadName}${environmentName}', '-', '')
+    namePrefix: compactNamePrefix
     location: location
     documentContainerName: 'uploaded-documents'
     principalId: identity.outputs.principalId
@@ -105,7 +115,7 @@ module search 'modules/search.bicep' = {
 module skillRegistry 'modules/cosmos-skill-registry.bicep' = if (enableSkillRegistry) {
   name: 'skill-registry'
   params: {
-    namePrefix: replace('${workloadName}${environmentName}', '-', '')
+    namePrefix: compactNamePrefix
     location: location
     principalId: identity.outputs.principalId
     tags: tags
@@ -115,7 +125,7 @@ module skillRegistry 'modules/cosmos-skill-registry.bicep' = if (enableSkillRegi
 module keyVault 'modules/key-vault.bicep' = {
   name: 'key-vault'
   params: {
-    namePrefix: replace('${workloadName}${environmentName}', '-', '')
+    namePrefix: compactNamePrefix
     location: location
     principalId: identity.outputs.principalId
     tags: tags
@@ -125,7 +135,7 @@ module keyVault 'modules/key-vault.bicep' = {
 module registry 'modules/container-registry.bicep' = {
   name: 'container-registry'
   params: {
-    namePrefix: replace('${workloadName}${environmentName}', '-', '')
+    namePrefix: compactNamePrefix
     location: location
     principalId: identity.outputs.principalId
     tags: tags
@@ -150,6 +160,7 @@ module api 'modules/container-app.bicep' = {
     environmentId: acaEnv.outputs.environmentId
     imageName: empty(apiImageName) ? 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest' : apiImageName
     managedIdentityId: identity.outputs.identityId
+    managedIdentityClientId: identity.outputs.clientId
     registryServer: registry.outputs.loginServer
     appInsightsConnectionString: insights.outputs.connectionString
     storageAccountName: storage.outputs.storageAccountName
@@ -158,17 +169,45 @@ module api 'modules/container-app.bicep' = {
     skillRegistryEndpoint: enableSkillRegistry ? skillRegistry!.outputs.accountEndpoint : ''
     skillRegistryDatabaseName: enableSkillRegistry ? skillRegistry!.outputs.databaseName : ''
     skillRegistryContainerName: enableSkillRegistry ? skillRegistry!.outputs.skillsContainerName : ''
+    architecturesContainerName: enableSkillRegistry ? skillRegistry!.outputs.architecturesContainerName : ''
+    deploymentsContainerName: enableSkillRegistry ? skillRegistry!.outputs.deploymentsContainerName : ''
     keyVaultUri: keyVault.outputs.vaultUri
     azureOpenAiEndpoint: resolvedAzureOpenAiEndpoint
     azureOpenAiDeploymentName: azureOpenAiDeploymentName
     azureOpenAiApiVersion: azureOpenAiApiVersion
+    corsAllowedOrigins: 'https://${agentBuilder.outputs.defaultHostname},http://localhost:8080'
+    agentApiAllowedHosts: agentApiAllowedHosts
     tags: union(tags, {
       'azd-service-name': 'api'
     })
   }
 }
 
+module agentBuilder 'modules/static-web-app.bicep' = {
+  name: 'agent-builder-static-web-app'
+  params: {
+    name: take('${baseName}-agent-builder-${uniqueString(resourceGroup().id)}', 60)
+    location: agentBuilderLocation
+    skuName: 'Standard'
+    tags: union(tags, {
+      'azd-service-name': 'agent-builder'
+    })
+  }
+}
+
+module agentBuilderBackendLink 'modules/static-web-app-backend-link.bicep' = {
+  name: 'agent-builder-api-link'
+  params: {
+    staticWebAppName: agentBuilder.outputs.staticWebAppName
+    backendResourceId: api.outputs.containerAppId
+    backendRegion: location
+  }
+}
+
 output apiUrl string = api.outputs.fqdn
+output agentBuilderUrl string = agentBuilder.outputs.url
+output agentBuilderHostname string = agentBuilder.outputs.defaultHostname
+output agentBuilderName string = agentBuilder.outputs.staticWebAppName
 output AZURE_CONTAINER_REGISTRY_ENDPOINT string = registry.outputs.loginServer
 output storageAccountName string = storage.outputs.storageAccountName
 output documentContainerName string = storage.outputs.documentContainerName

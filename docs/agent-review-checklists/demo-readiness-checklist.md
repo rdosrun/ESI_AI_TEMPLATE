@@ -12,7 +12,7 @@ Use this checklist before an interview or stakeholder demo.
 ## Follow-Up Checks
 
 - [ ] Run the API locally before the demo.
-- [ ] Prepare one sample document for `/upload`.
-- [ ] Prepare one business question for `/ask`.
+- [ ] Prepare one sample document reference for `upload_document`.
+- [ ] Prepare one business question for `ask_question`.
 - [ ] Decide whether to demo local-only or deployed Azure flow.
 - [ ] Review Azure costs before running `azd up`.

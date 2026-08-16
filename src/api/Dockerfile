@@ -1,7 +1,7 @@
 FROM python:3.12-slim
 
 LABEL com.azure.containerregistry.image.title="ESI Azure AI Proof-of-Concept API"
-LABEL com.azure.containerregistry.image.description="FastAPI starter API for Azure AI Foundry, RAG, agent skill lookup, and KPI demos."
+LABEL com.azure.containerregistry.image.description="FastMCP server for Azure AI Foundry, RAG, agent skill lookup, and KPI demos."
 LABEL com.azure.containerregistry.image.vendor="ESI AI Solutions Architect Starter Kit"
 LABEL com.azure.containerregistry.image.source="https://github.com/replace-with-your-org/esi-ai-solutions-architect-starter"
 LABEL com.azure.containerregistry.image.documentation="docs/azure-container-registry.md"
@@ -12,10 +12,11 @@ ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-COPY requirements.txt .
+COPY src/api/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY main.py .
+COPY src/api/main.py src/api/architecture_api.py src/api/agent_runtime.py src/api/api_executor.py ./
+COPY schemas/agent-architecture.schema.json ./schemas/agent-architecture.schema.json
 
 EXPOSE 8000
 
